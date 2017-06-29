@@ -141,11 +141,11 @@
     Maze.prototype.isInMaze = function(x, y) {
         return x >= 0 && y >= 0 && x < this.width && y < this.height;
     }
-    Maze.prototype.render = function(context) {
+    Maze.prototype.render = function(context, cellWidth = CELL_SIZE[0], cellHeight = CELL_SIZE[1]) {
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.save();
-        context.scale(CELL_SIZE[0], CELL_SIZE[1]);
+        context.scale(cellWidth, cellHeight);
         console.log(this.maze);
         if (!this.maze) return;
         for (let x = 0; x < this.width; x++) {
