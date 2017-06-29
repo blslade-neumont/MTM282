@@ -7,6 +7,7 @@
     let canvasSize = [500, 500];
     
     let CELL_SIZE = [2, 2];
+    // let CELL_SIZE = [48, 48];
     
     let maze = null;
     
@@ -53,7 +54,7 @@
         return arr;
     }
     let pseudoRng = (function() {
-        const RND_COUNT = 200;
+        const RND_COUNT = 9001;
         let vals = [];
         for (let q = 0; q < RND_COUNT; q++) {
             vals.push(shuffle([0, 1, 2, 3]));
@@ -88,6 +89,8 @@
         this.maze[x][y] = 0;
         
         let rndIdx = 0;
+        let endPos = [x, y];
+        let endValue = 0;
         while (true) {
             let lastVal = this.maze[x][y];
             let moved = false;
@@ -97,8 +100,12 @@
                 if (this.isInMaze(x + dir[0] * 2, y + dir[1] * 2) && this.maze[x + dir[0] * 2][y + dir[1] * 2] === -1) {
                     moved = true;
                     this.maze[x + dir[0] * 2][y + dir[1] * 2] = lastVal + 1;
-                    this.maze[x + dir[0] * 1][y + dir[1] * 1] = 0;
+                    this.maze[x + dir[0] * 1][y + dir[1] * 1] = 1;
                     [x, y] = [x + dir[0] * 2, y + dir[1] * 2];
+                    if ((x === 1 || y === 1 || x === this.width - 2 || y === this.height - 2) && lastVal + 1 > endValue) {
+                        endPos = [x, y];
+                        endValue = lastVal + 1;
+                    }
                     break;
                 }
             }
@@ -116,6 +123,20 @@
                 if (!found) throw new Error('Failed to backtrack maze during maze generation');
             }
         }
+        
+        [x, y] = endPos;
+        while (true) {
+            let currVal = this.maze[x][y];
+            this.maze[x][y] = 0;
+            if (currVal === 0) break;
+            for (let q = 0; q < 4; q++) {
+                let dir = directions[q];
+                if (this.isInMaze(x + dir[0] * 2, y + dir[1] * 2) && this.maze[x + dir[0] * 2][y + dir[1] * 2] === currVal - 1) {
+                    this.maze[x + dir[0] * 1][y + dir[1] * 1] = 0;
+                    [x, y] = [x + dir[0] * 2, y + dir[1] * 2];
+                }
+            }
+        }
     }
     Maze.prototype.isInMaze = function(x, y) {
         return x >= 0 && y >= 0 && x < this.width && y < this.height;
@@ -131,7 +152,9 @@
             let col = this.maze[x];
             for (let y = 0; y < this.height; y++) {
                 let cell = col[y];
-                context.fillStyle = cell == -1 ? 'black' : 'red';
+                context.fillStyle = cell === -1 ? 'black' :
+                                     cell === 0 ? 'green' :
+                                                  'red';
                 context.fillRect(x, y, 1, 1);
             }
         }
