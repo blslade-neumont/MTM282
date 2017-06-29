@@ -6,7 +6,7 @@
     let context = null;
     let canvasSize = [500, 500];
     
-    let CELL_SIZE = [4, 4];
+    let CELL_SIZE = [2, 2];
     
     let maze = null;
     
@@ -123,6 +123,8 @@
     Maze.prototype.render = function(context) {
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        context.scale(CELL_SIZE[0], CELL_SIZE[1]);
         console.log(this.maze);
         if (!this.maze) return;
         for (let x = 0; x < this.width; x++) {
@@ -130,9 +132,10 @@
             for (let y = 0; y < this.height; y++) {
                 let cell = col[y];
                 context.fillStyle = cell == -1 ? 'black' : 'red';
-                context.fillRect(x * CELL_SIZE[0], y * CELL_SIZE[1], CELL_SIZE[0], CELL_SIZE[1]);
+                context.fillRect(x, y, 1, 1);
             }
         }
+        context.restore();
     }
     
     init();
