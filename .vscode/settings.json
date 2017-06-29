@@ -1,0 +1,7 @@
+{
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "all",
+    "files.insertFinalNewline": true,
+    "editor.trimAutoWhitespace": false,
+    "editor.renderIndentGuides": false
+}
