@@ -182,12 +182,6 @@
         if (this.aiPlayer.enabled) {
             context.fillStyle = 'blue';
             context.fillRect(this.aiPlayer.x, this.aiPlayer.y, 1, 1);
-            context.fillStyle = 'red';
-            context.fillRect(this.aiPlayer.x + this.aiPlayer.fronty, this.aiPlayer.y - this.aiPlayer.frontx, 1, 1);
-            context.fillStyle = 'green';
-            context.fillRect(this.aiPlayer.x + this.aiPlayer.frontx, this.aiPlayer.y + this.aiPlayer.fronty, 1, 1);
-            context.fillStyle = 'blue';
-            context.fillRect(this.aiPlayer.x - this.aiPlayer.fronty, this.aiPlayer.y + this.aiPlayer.frontx, 1, 1);
         }
         
         context.restore();
@@ -246,8 +240,10 @@
                 this.realPlayer.vspeed = 0;
                 let mvx = 0 + ((this.keys.has('ArrowRight') && this.keys.get('ArrowRight')) ? 1 : 0) - ((this.keys.has('ArrowLeft') && this.keys.get('ArrowLeft')) ? 1 : 0);
                 let mvy = 0 + ((this.keys.has('ArrowDown') && this.keys.get('ArrowDown')) ? 1 : 0) - ((this.keys.has('ArrowUp') && this.keys.get('ArrowUp')) ? 1 : 0);
-                if ((mvx !== 0 || mvy !== 0) && this.isInMaze(this.realPlayer.x + mvx, this.realPlayer.y + mvy) && this.maze[this.realPlayer.x + mvx][this.realPlayer.y + mvy] === 0) {
+                if (mvx !== 0 && this.isInMaze(this.realPlayer.x + mvx, this.realPlayer.y) && this.maze[this.realPlayer.x + mvx][this.realPlayer.y] !== -1) {
                     this.realPlayer.hspeed = mvx / 8;
+                }
+                else if (mvy !== 0 && this.isInMaze(this.realPlayer.x, this.realPlayer.y + mvy) && this.maze[this.realPlayer.x][this.realPlayer.y + mvy] !== -1) {
                     this.realPlayer.vspeed = mvy / 8;
                 }
             }
