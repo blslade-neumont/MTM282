@@ -1,0 +1,81 @@
+
+
+body {
+    margin: 0;
+    background: lightgrey;
+    font-family: 'Zilla Slab', serif;
+}
+
+#gameContainer {
+    max-width: 800px;
+    margin: 16px auto;
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+}
+.info {
+    padding: 40px;
+    text-align: center;
+    font-size: 24pt;
+}
+
+#gameContainer:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+#gameContainer > * {
+    clear: both;
+}
+
+label {
+    display: block;
+    width: 100%;
+    text-align: right;
+    margin-bottom: 8px;
+    line-height: 40px;
+    vertical-align: middle;
+}
+label:after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+}
+label > select {
+    width: 70%;
+    float: right;
+    height: 40px;
+    padding: 0 10px;
+}
+
+button {
+    float: right;
+    padding: 8px 16px;
+}
+
+label > input[type=radio] {
+    display: none;
+}
+.question ~ label {
+    text-align: left;
+    width: 100%;
+    border: 1px solid rgb(240, 240, 240);
+    padding: 0 16px;
+    box-sizing: border-box;
+}
+.question ~ label:first-of-type {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+.question ~ label:last-of-type {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+.question ~ label:hover {
+    background: rgb(230, 230, 230);
+    border: 1px solid grey;
+}
+
+:checked ~ span {
+    font-weight: bold;
+}
