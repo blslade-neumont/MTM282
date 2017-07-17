@@ -19,8 +19,12 @@
     function loadQuestions(opts) {
         let count = opts.count || 10;
         let category = opts.category;
+        let difficulty = opts.difficulty;
+        let type = opts.type;
         let url = `https://opentdb.com/api.php?amount=${count}`;
         if (category) url += `&category=${category}`;
+        if (difficulty) url += `&difficulty=${difficulty}`;
+        if (type) url += `&type=${type}`;
         return loadJson(url);
     }
     
@@ -47,12 +51,41 @@
         return select;
     }
     
+    function writeCookie(name, value) {
+        document.cookie = `${name}=${escape(JSON.stringify(value))}; path=/`;
+    }
+    function readCookie(name) {
+        if (!document.cookie) return null;
+        let start = document.cookie.indexOf(name + '=');
+        if (start === -1) return null;
+        let end = document.cookie.indexOf(';', start);
+        if (end === -1) end = document.cookie.length;
+        return JSON.parse(unescape(document.cookie.substring(start + name.length + 1, end)));
+    }
+    function setHighscore(score) {
+        writeCookie('highscore', score);
+    }
+    function getHighscore() {
+        return readCookie('highscore');
+    }
+    
+    function getDifficultyValue(difficulty) {
+        if (difficulty === 'easy') return 1;
+        else if (difficulty === 'medium') return 2;
+        else return 4;
+    }
+    
     async function init() {
         let loadedCategories = (await loadCategories()).trivia_categories;
         let categories = [{ id: 0, name: 'Any' }, ...loadedCategories];
         
         let container = document.getElementById('gameContainer');
-        container.innerHTML = '';
+        container.innerHTML = '<div class="info">Welcome to Trivia!</div>' +
+            `<p>The current highscore is ${getHighscore() || 0}.</p>` +
+            `<p>You gain score by answering harder questions correctly. ` +
+            `Correct streaks are worth more than individual answers. ` +
+            `Multiple choice are worth more than true/false questions.</p>` +
+            `<p>Select your game options to continue.</p>`;
         
         let categorySelect = addSelect('Category', categories, container);
         let difficultySelect = addSelect('Difficulty', difficulties, container);
@@ -79,17 +112,33 @@
     
     async function startGame(questions) {
         let container = document.getElementById('gameContainer');
-        container.innerHTML = '<div class="info">Your questions are ready.</div>';
+        let msg = questions.length === 10 ? 'Your questions are ready.' :
+                        !questions.length ? `Could not find questions with those specs. Try again!` :
+                                            `Only found ${questions.length} question${questions.length > 1 ? 's' : ''}`;
+        container.innerHTML = `<div class="info">${msg}</div>`;
         console.log(questions);
         
-        let submitButton = document.createElement('button');
-        submitButton.type = 'button';
-        submitButton.textContent = 'Begin Game';
-        submitButton.addEventListener('click', startTimer);
-        container.appendChild(submitButton);
+        if (questions.length !== 10) {
+            let backButton = document.createElement('button');
+            backButton.type = 'button';
+            backButton.textContent = 'Modify Search';
+            backButton.addEventListener('click', init);
+            container.appendChild(backButton);
+        }
+        if (questions.length) {
+            let submitButton = document.createElement('button');
+            submitButton.type = 'button';
+            submitButton.textContent = 'Begin Game';
+            submitButton.addEventListener('click', startTimer);
+            container.appendChild(submitButton);
+        }
         
         timeLeft = 10 * questions.length;
         correctCount = 0;
+        difficultySum = 0;
+        longestCorrectStreak = 0;
+        correctStreak = 0;
+        trueFalseTotal = 0;
         async function startTimer() {
             correctCount = 0;
             nextQuestion();
@@ -100,7 +149,7 @@
         selectedAnswerIdx = -1;
         function nextQuestion() {
             if (++currentQuestionIdx === questions.length) {
-                container.innerHTML = `<div class="info">You Got ${correctCount} Questions Right!</div>`;
+                endGame();
                 return;
             }
             let question = questions[currentQuestionIdx];
@@ -108,10 +157,17 @@
             let submitButton = document.createElement('button');
             submitButton.disabled = true;
             submitButton.type = 'button';
-            submitButton.textContent = 'Begin Game';
+            submitButton.textContent = 'Submit Answer';
             submitButton.addEventListener('click', () => {
                 let isCorrect = selectedAnswerIdx === correctAnswerIdx;
-                if (isCorrect) correctCount++;
+                if (isCorrect) {
+                    correctCount++;
+                    difficultySum += getDifficultyValue(question.difficulty);
+                    correctStreak++;
+                    if (longestCorrectStreak < correctStreak) longestCorrectStreak = correctStreak;
+                    if (question.incorrect_answers.length === 1) trueFalseTotal++;
+                }
+                else correctStreak = 0;
                 console.log(isCorrect ? 'Correct!' : 'Incorrect.');
                 nextQuestion();
             });
@@ -143,7 +199,32 @@
             }
             container.appendChild(submitButton);
         }
+        
+        function endGame() {
+            let score = Math.ceil(difficultySum * (((questions.length * 2) - trueFalseTotal) / (questions.length * 2)) * (1 + (longestCorrectStreak / 10)));
+            container.innerHTML = `<div class="info">You Got ${correctCount} Questions Right!</div>` +
+                `<p>Base Score: ${correctCount}</p>` +
+                `<p>* Difficulty Modifier: ${Math.floor((difficultySum / correctCount) * 100)}%</p>` +
+                `<p>* True/False Modifier: ${Math.floor((((questions.length * 2) - trueFalseTotal) / (questions.length * 2)) * 100)}%</p>` +
+                `<p>* Longest Streak (${longestCorrectStreak}) Modifier: ${1 + (longestCorrectStreak / 10)}</p>` +
+                `<p>= Final Score: <strong>${score}</strong> (rounded up)</p>`;
+            
+            let previousScore = getHighscore() || 0;
+            let p = document.createElement('p');
+            if (previousScore === score) p.innerText = 'You matched your previous high score!';
+            else if (previousScore < score) {
+                p.innerText = `You beat your previous hich score by ${score - previousScore} points!`;
+                setHighscore(score);
+            }
+            else p.innerText = `You fell short of your previous high score by ${previousScore - score} points.`;
+            container.appendChild(p);
+            
+            let backButton = document.createElement('button');
+            backButton.type = 'button';
+            backButton.textContent = 'Play Again';
+            backButton.addEventListener('click', init);
+            container.appendChild(backButton);
+        }
     }
-    
     
 })();
