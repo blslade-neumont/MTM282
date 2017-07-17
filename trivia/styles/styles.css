@@ -62,6 +62,10 @@ label > input[type=radio] {
     border: 1px solid rgb(240, 240, 240);
     padding: 0 16px;
     box-sizing: border-box;
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
 }
 .question ~ label:first-of-type {
     border-top-left-radius: 6px;
@@ -71,9 +75,22 @@ label > input[type=radio] {
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
 }
-.question ~ label:hover {
+.question:not(.done) ~ label:hover {
     background: rgb(230, 230, 230);
     border: 1px solid grey;
+}
+
+.question.done ~ label.correct {
+    background: rgb(200, 255, 200);
+}
+.question.done ~ label.correct > :checked ~ span:after {
+    content: ' - Correct';
+}
+.question.done ~ label.incorrect {
+    background: rgb(255, 200, 200);
+}
+.question.done ~ label.incorrect > :checked ~ span:after {
+    content: ' - Incorrect';
 }
 
 :checked ~ span {

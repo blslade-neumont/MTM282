@@ -28,7 +28,7 @@
         return loadJson(url);
     }
     
-    categories = [];
+    categories = null;
     difficulties = [{ id: '', name: 'Any' }, { id: 'easy', name: 'Easy' }, { id: 'medium', name: 'Medium' }, { id: 'hard', name: 'Hard' }];
     types = [{ id: '', name: 'Any' }, { id: 'multiple', name: 'Multiple Choice' }, { id: 'boolean', name: 'True or False' }];
     
@@ -76,8 +76,10 @@
     }
     
     async function init() {
-        let loadedCategories = (await loadCategories()).trivia_categories;
-        let categories = [{ id: 0, name: 'Any' }, ...loadedCategories];
+        if (!categories) {
+            let loadedCategories = (await loadCategories()).trivia_categories;
+            categories = [{ id: 0, name: 'Any' }, ...loadedCategories];
+        }
         
         let container = document.getElementById('gameContainer');
         container.innerHTML = '<div class="info">Welcome to Trivia!</div>' +
@@ -153,12 +155,20 @@
                 return;
             }
             let question = questions[currentQuestionIdx];
+            container.innerHTML = '';
+            
+            let questionEl = document.createElement('div');
+            questionEl.classList.add('info');
+            questionEl.classList.add('question');
+            questionEl.innerHTML = question.question;
+            container.appendChild(questionEl);
             
             let submitButton = document.createElement('button');
             submitButton.disabled = true;
             submitButton.type = 'button';
             submitButton.textContent = 'Submit Answer';
             submitButton.addEventListener('click', () => {
+                submitButton.disabled = true;
                 let isCorrect = selectedAnswerIdx === correctAnswerIdx;
                 if (isCorrect) {
                     correctCount++;
@@ -169,10 +179,11 @@
                 }
                 else correctStreak = 0;
                 console.log(isCorrect ? 'Correct!' : 'Incorrect.');
-                nextQuestion();
+                questionEl.classList.add('done');
+                submitButton.disabled = true;
+                setTimeout(() => nextQuestion(), 2000);
             });
             
-            container.innerHTML = `<div class="info question">${question.question}</div>`;
             correctAnswerIdx = Math.floor(Math.random() * (question.incorrect_answers.length + 1));
             for (let q = 0; q < question.incorrect_answers.length + 1; q++) {
                 let answer;
@@ -184,10 +195,12 @@
                     answer = question.incorrect_answers[iaidx];
                 }
                 let label = document.createElement('label');
+                label.className = q === correctAnswerIdx ? 'correct' : 'incorrect';
                 let radio = document.createElement('input');
                 radio.type = 'radio';
                 radio.name = 'answer';
                 radio.addEventListener('change', () => {
+                    if (questionEl.classList.contains('done')) return;
                     selectedAnswerIdx = q;
                     submitButton.disabled = false;
                 });
@@ -202,7 +215,7 @@
         
         function endGame() {
             let score = Math.ceil(difficultySum * (((questions.length * 2) - trueFalseTotal) / (questions.length * 2)) * (1 + (longestCorrectStreak / 10)));
-            container.innerHTML = `<div class="info">You Got ${correctCount} Questions Right!</div>` +
+            container.innerHTML = `<div class="info">You Got ${correctCount} Question${correctCount !== 1 ? 's' : ''} Right!</div>` +
                 `<p>Base Score: ${correctCount}</p>` +
                 `<p>* Difficulty Modifier: ${Math.floor((difficultySum / correctCount) * 100)}%</p>` +
                 `<p>* True/False Modifier: ${Math.floor((((questions.length * 2) - trueFalseTotal) / (questions.length * 2)) * 100)}%</p>` +
