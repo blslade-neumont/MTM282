@@ -19,13 +19,22 @@ form {
 }
 .form-group-title {
     font-weight: bold;
-    float: right;
+}
+.form-group-title > span {
+    display: block;
     width: calc(70% + 20px);
+    float: right;
     margin-bottom: .5em;
+}
+.form-group-title > span:after, .form-group-title:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 label {
     display: block;
+    position: relative;
     width: 100%;
     text-align: right;
     margin-bottom: 8px;
@@ -58,4 +67,54 @@ button, input[type=button], input[type=submit] {
 }
 .dirty.valid {
     border: 1px solid green;
+}
+
+.validation-feedback {
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 0;
+    padding: 9px;
+    border-radius: 4px;
+    border: 1px solid lightgrey;
+    background: white;
+    width: 300px;
+    font-size: 12pt;
+    text-align: left;
+    line-height: initial;
+}
+.validation-feedback:before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    background: white;
+    background: linear-gradient(to bottom right, white 0%, white 55%, rgba(255, 255, 255, 0) 56%, rgba(255, 255, 255, 0) 100%);
+    transform: rotate(-45deg);
+    left: -9px;
+    top: 11px;
+    border-top: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+}
+
+.validation-feedback > .item {
+    display: block;
+}
+.validation-feedback > .item:before {
+    display: inline-block;
+    margin-right: 12px;
+}
+.validation-feedback > .item.valid:before {
+    content: '\2713';
+    color: green;
+}
+.validation-feedback > .item.invalid:before {
+    content: '\2715';
+    color: red;
+}
+
+.tx {
+    text-align: center;
+    margin: 80px auto;
+    font-size: 24pt;
 }
