@@ -1,0 +1,134 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>Regex Form Validation</title>
+        <link rel="stylesheet" href="./styles/styles.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Zilla+Slab"> 
+        <link rel="shortcut icon" href="img/favicon.png" />
+    </head>
+    <body class="full-size">
+        <noscript>
+            <h1><em>Please,</em> stop living in the past and upgrade your browser.</h1>
+            <p>This game requires javascript in order to run.</p>
+        </noscript>
+        <script type="text/javascript" src="./scripts/main.bundle.js"></script>
+        <form action="./thanks.html">
+            <div class="form-group">
+                <div class="form-group-title">
+                    <span>Personal</span>
+                </div>
+                <label>
+                    <span>First Name</span>
+                    <input
+                      type="text"
+                      name="fname"
+                      data-regex="^[^\s]+$"
+                      data-regex-desc="Must be at least one character"
+                      autofocus="autofocus"
+                    />
+                </label>
+                <label>
+                    <span>Last Name</span>
+                    <input
+                      type="text"
+                      name="lname"
+                      data-regex="^[^\s]+$"
+                      data-regex-desc="Must be at least one character"
+                    />
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-group-title">
+                    <span>Address</span>
+                </div>
+                <label>
+                    <span>Street Address</span>
+                    <input
+                      type="text"
+                      name="address"
+                      data-regex="^[^\s]+(\s+[^\s]+)+$"
+                      data-regex-desc="Must be a valid street address"
+                    />
+                </label>
+                <label>
+                    <span>City</span>
+                    <input
+                      type="text"
+                      name="city"
+                      data-regex="^[^\s]+$"
+                      data-regex-desc="Must be at least one character"
+                    />
+                </label>
+                <label>
+                    <span>State Code</span>
+                    <input
+                      type="text"
+                      name="state"
+                      data-regex="^(al|ak|as|az|ar|ca|co|ct|de|dc|fl|ga|gu|hi|id|il|in|ia|ks|ky|la|me|md|mh|ma|mi|fm|mn|ms|mo|mt|ne|nv|nh|nh|nj|nm|ny|nc|nd|mp|oh|ok|or|pw|pa|pr|ri|sc|sd|tn|tx|ut|vt|va|vi|wa|wv|wi|wy)$"
+                      data-regex-desc="Must be a valid state code"
+                      data-toupper="true"
+                    />
+                </label>
+                <label>
+                    <span>Zip Code</span>
+                    <input
+                      type="text"
+                      name="zipcode"
+                      data-regex="^[1-9][0-9]{4}(-[0-9]{4})?$"
+                      data-regex-desc="Must be a valid five- or nine-digit zip code"
+                    />
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-group-title">
+                    <span>Contact Information</span>
+                </div>
+                <label>
+                    <span>Phone Number</span>
+                    <input
+                      type="text"
+                      name="phone"
+                      data-regex="^1?(\([0-9]{3}\) ?|[0-9]{3}-)[0-9]{3}-[0-9]{4}$|^[0-9]{10}$"
+                      data-regex-desc="Must be a valid US phone number"
+                    />
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-group-title">
+                    <span>Password</span>
+                </div>
+                <label>
+                    <span>Password</span>
+                    <input
+                      type="password"
+                      name="password"
+                      data-regex-c="4"
+                      data-regex-0="^.{8,}$"
+                      data-regex-0-desc="Must be at least eight characters"
+                      data-regex-1="^(?:.*[A-Z])"
+                      data-regex-1-desc="Must have at least one capital letter"
+                      data-regex-2="^(?:.*[0-9])"
+                      data-regex-2-desc="Must have at least one digit"
+                      data-regex-3="^(?:.*[!@#$%\^&amp;*()[\]{};:'&quot;&lt;>,.\/?])"
+                      data-regex-3-desc="Must have at least one special character"
+                    />
+                </label>
+                <label>
+                    <span>Verify Password</span>
+                    <input
+                      type="password"
+                      name="verifypassword"
+                      data-match="password"
+                      data-match-desc="Must match the other password field"
+                    />
+                </label>
+            </div>
+            
+            <input id="submitbtn" type="submit" value="Submit" />
+        </form>
+    </body>
+</html>
