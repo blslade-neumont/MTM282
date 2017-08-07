@@ -1,0 +1,10 @@
+html {
+  background-color: #600;
+}
+body {
+  background-color: #ed6;
+  color: #600;
+  width: 80%;
+  padding: 20px;
+  margin: 20px auto;
+}

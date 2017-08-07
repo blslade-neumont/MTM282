@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    h2 Please enter your name:
+    
+    form(method='post', action='/')
+        labal Name
+        br
+        input(type='text' name='userName')
+        br
+        input(type='submit' value='Submit')
